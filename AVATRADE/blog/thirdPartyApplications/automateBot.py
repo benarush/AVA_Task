@@ -3,6 +3,7 @@ import requests
 import xml.etree.ElementTree as ET
 import json
 import random
+import sys
 
 
 class BotConfig:
@@ -83,13 +84,20 @@ class Bot(BotConfig):
     def create_likes(self):
         start_user = self.find_most_posts_user()
         options_posts_to_like = list(set(self.all_posts) - set(self.users_data[start_user]['posts']))
+        self.valid_choices_to_like(options_posts_to_like)
         for p in range(self.max_likes_per_user):
+            post_to_like = options_posts_to_like.pop(random.randrange(0, len(options_posts_to_like)))
+            self.likes.append(post_to_like)
+            self.check_posts_with_zero_likes()
             self.create_post_likes(
                 start_user,
-                options_posts_to_like.pop(random.randrange(0, len(options_posts_to_like)))
+                post_to_like
             )
 
     def find_most_posts_user(self):
+        """
+            the task demand that the user with the largest amount of posts will start liking
+        """
         user_to_return = ""
         last_value = 0
         for user in self.users_token:
@@ -98,7 +106,6 @@ class Bot(BotConfig):
                 user_to_return = user
         self.users_token.remove(user_to_return)
         return user_to_return
-
 
     @staticmethod
     def bind_data(user_dict_data, user_token, post_list):
@@ -113,7 +120,7 @@ class Bot(BotConfig):
         data = {
             "username": "TestUserdsa" + str(random.randrange(1, 1000000)),
             "password": "Aa12Aa12",
-            "email": "dudu@gmail.com"
+            "email": "benharushtomer@gmail.com"
         }
         response = requests.post(self.urls['create_user'],
                                  data=data)
@@ -151,6 +158,22 @@ class Bot(BotConfig):
                                  headers={'Authorization': 'Token ' + token},
                                  data=data)
         print(response.text)
+
+    def check_posts_with_zero_likes(self):
+        """
+            one of the task rules is to exit if there is no posts with zero likes
+        """
+        if not list(set(self.all_posts) - set(self.likes)):
+            print("there is no post with 0 likes")
+            sys.exit()
+
+    def valid_choices_to_like(self, options_posts_to_like):
+        """
+            if there is not enough post to like, we cant continue
+        """
+        if len(options_posts_to_like) < self.max_likes_per_user:
+            print("not enough posts to like... change the value at the XML file ")
+            sys.exit()
 
     def __str__(self):
         return "< Bot obj >"

@@ -41,8 +41,9 @@ def create_user():
                              data=data)
     print(response.text)
 
-token = get_token()
-print(f"token - {token}")
-print(create_post(token))
-print(create_post_likes(token))
+# token = get_token()
+# print(f"token - {token}")
+# print(create_post(token))
+# print(create_post_likes(token))
 # create_user()
+

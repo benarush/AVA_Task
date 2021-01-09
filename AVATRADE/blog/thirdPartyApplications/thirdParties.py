@@ -8,7 +8,7 @@ import json
 
 
 class Config:
-    hunter_pk = "d4f5f63afc56481d208f6b5efde092128219db95"
+    hunter_pk = "<my hunter api key>"
 
 
 class API(Config):
